@@ -1,0 +1,1084 @@
+<!doctype html>
+<html lang="es">
+ <head>
+  <meta charset="UTF-8">
+  <title>Agencia de Viajes Interprovinciales - Demo</title><!-- Tailwind via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script><!-- Canva SDKs (no hacen nada fuera de Canva, pero no molestan) -->
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+  </style>
+  <script>
+    // Configuración base para Tailwind (fuentes, colores opcionales)
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['system-ui', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+  <style>@view-transition { navigation: auto; }</style>
+ </head>
+ <body class="h-full min-h-full bg-gradient-to-br from-[#0f172a] via-[#020617] to-[#111827] text-white">
+  <header class="w-full border-b border-white/10 bg-white/5 backdrop-blur">
+   <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-3"><!-- Logo simple -->
+     <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#22c55e] to-[#0ea5e9] flex items-center justify-center shadow-lg shadow-emerald-500/40"><span class="text-xl font-bold">✈</span>
+     </div>
+     <div>
+      <h1 class="text-lg md:text-2xl font-semibold tracking-tight">Terranova Viajes</h1>
+      <p class="text-xs md:text-sm text-slate-300">Plataforma demo de compra de pasajes</p>
+     </div>
+    </div>
+    <nav class="flex items-center gap-2 md:gap-4 text-sm md:text-base" aria-label="Navegación principal"><button id="btnUserView" class="px-3 md:px-4 py-2 rounded-full border border-transparent bg-emerald-500 text-white font-medium shadow-sm hover:bg-emerald-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 focus-visible:ring-emerald-400 transition"> Usuario </button> <button id="btnCompanyView" class="px-3 md:px-4 py-2 rounded-full border border-white/20 text-slate-100 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 focus-visible:ring-sky-400 transition"> Empresas </button> <button id="btnLogout" class="px-3 md:px-4 py-2 rounded-full border border-red-400/40 text-red-300 hover:bg-red-500/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 focus-visible:ring-red-400 transition text-xs md:text-sm"> Cerrar sesión </button>
+    </nav>
+   </div>
+  </header><!-- Pantalla de Login/Registro -->
+  <section id="loginScreen" class="min-h-[calc(100%-80px)] flex items-center justify-center px-6 py-10">
+   <div class="w-full max-w-md"><!-- Card de bienvenida -->
+    <div class="rounded-3xl bg-gradient-to-br from-emerald-500/20 via-sky-500/10 to-indigo-500/10 border border-white/10 p-6 md:p-8 shadow-2xl shadow-sky-500/20 mb-6">
+     <div class="text-center mb-6">
+      <div class="w-16 h-16 mx-auto rounded-2xl bg-gradient-to-tr from-[#22c55e] to-[#0ea5e9] flex items-center justify-center shadow-lg shadow-emerald-500/40 mb-4"><span class="text-3xl">✈</span>
+      </div>
+      <h2 class="text-2xl md:text-3xl font-bold mb-2">Bienvenido a Terranova Viajes</h2>
+      <p class="text-sm md:text-base text-slate-300">Tu plataforma de viajes interprovinciales</p>
+     </div><!-- Tabs Login / Registro -->
+     <div class="flex gap-2 mb-4" role="tablist"><button id="tabLogin" class="flex-1 px-4 py-2 text-sm rounded-xl bg-emerald-500 text-white font-medium shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400" role="tab" aria-selected="true"> Iniciar Sesión </button> <button id="tabRegister" class="flex-1 px-4 py-2 text-sm rounded-xl bg-transparent text-slate-200 border border-white/10 hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400" role="tab" aria-selected="false"> Registrarse </button>
+     </div><!-- Formulario Login -->
+     <form id="loginForm" class="space-y-3" role="tabpanel" aria-labelledby="tabLogin">
+      <div class="flex flex-col gap-1"><label for="loginEmail" class="text-xs font-medium text-slate-200">Correo electrónico</label> <input id="loginEmail" type="email" placeholder="ejemplo@correo.com" class="rounded-xl border border-white/20 bg-slate-900/80 px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400" required>
+      </div>
+      <div class="flex flex-col gap-1"><label for="loginPassword" class="text-xs font-medium text-slate-200">Contraseña</label> <input id="loginPassword" type="password" placeholder="••••••••" class="rounded-xl border border-white/20 bg-slate-900/80 px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400" required>
+      </div>
+      <p id="loginMessage" class="text-xs text-red-300 min-h-[16px]"></p><button type="submit" class="w-full rounded-xl bg-emerald-500 hover:bg-emerald-400 text-sm font-semibold px-4 py-2.5 shadow-md shadow-emerald-500/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"> Entrar </button>
+      <p class="text-xs text-slate-400 text-center mt-3">Demo: Usa cualquier correo y contraseña para entrar</p>
+     </form><!-- Formulario Registro -->
+     <form id="registerForm" class="space-y-3 hidden" role="tabpanel" aria-labelledby="tabRegister">
+      <div class="flex flex-col gap-1"><label for="registerName" class="text-xs font-medium text-slate-200">Nombre completo</label> <input id="registerName" type="text" placeholder="Juan P��rez" class="rounded-xl border border-white/20 bg-slate-900/80 px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400" required>
+      </div>
+      <div class="flex flex-col gap-1"><label for="registerEmail" class="text-xs font-medium text-slate-200">Correo electrónico</label> <input id="registerEmail" type="email" placeholder="ejemplo@correo.com" class="rounded-xl border border-white/20 bg-slate-900/80 px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400" required>
+      </div>
+      <div class="flex flex-col gap-1"><label for="registerPassword" class="text-xs font-medium text-slate-200">Contraseña</label> <input id="registerPassword" type="password" placeholder="••••••••" class="rounded-xl border border-white/20 bg-slate-900/80 px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400" required>
+      </div>
+      <div class="flex flex-col gap-1"><label for="registerDni" class="text-xs font-medium text-slate-200">DNI</label> <input id="registerDni" type="text" placeholder="12345678" class="rounded-xl border border-white/20 bg-slate-900/80 px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400" required>
+      </div>
+      <p id="registerMessage" class="text-xs text-red-300 min-h-[16px]"></p><button type="submit" class="w-full rounded-xl bg-emerald-500 hover:bg-emerald-400 text-sm font-semibold px-4 py-2.5 shadow-md shadow-emerald-500/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"> Crear cuenta </button>
+      <p class="text-xs text-slate-400 text-center mt-3">Demo: Los datos no se guardan realmente</p>
+     </form>
+    </div><!-- Info adicional -->
+    <div class="text-center space-y-2 text-xs text-slate-400">
+     <p>🔒 Plataforma segura y confiable</p>
+     <p>✨ Acceso a las mejores empresas de transporte</p>
+     <p>🎫 Reserva tus pasajes en segundos</p>
+    </div>
+   </div>
+  </section>
+  <main id="mainApp" class="max-w-6xl mx-auto px-6 py-6 md:py-10 hidden"><!-- Layout principal: panel izquierdo info + panel derecho contenido -->
+   <section class="grid grid-cols-1 md:grid-cols-[1.1fr,1.6fr] gap-6 md:gap-8 items-start"><!-- Panel izquierdo: hero + tabs usuario -->
+    <aside class="space-y-6">
+     <div class="rounded-3xl bg-gradient-to-br from-emerald-500/20 via-sky-500/10 to-indigo-500/10 border border-white/10 p-5 md:p-7 shadow-xl shadow-sky-500/20">
+      <h2 class="text-xl md:text-2xl font-semibold mb-2">Reserva tu viaje interprovincial</h2>
+      <p class="text-sm md:text-base text-slate-200 mb-4">Elige tu origen, destino y fecha para encontrar buses disponibles de distintas empresas.</p>
+      <ul class="space-y-2 text-xs md:text-sm text-slate-100">
+       <li class="flex items-start gap-2"><span class="mt-0.5 text-emerald-400">•</span> <span>3 rutas demo: Lima–Trujillo, Lima–Cusco, Trujillo–Cusco.</span></li>
+       <li class="flex items-start gap-2"><span class="mt-0.5 text-emerald-400">•</span> <span>Reserva sin pago real. Solo simulación de asiento y datos.</span></li>
+       <li class="flex items-start gap-2"><span class="mt-0.5 text-emerald-400">•</span> <span>Acceso para empresas: administra buses, rutas y asientos.</span></li>
+      </ul>
+      <div class="mt-4 inline-flex items-center gap-2 rounded-full bg-black/20 px-3 py-1 text-[11px] md:text-xs text-slate-200 border border-white/10"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Demo sin pagos ni login reales.
+      </div>
+     </div><!-- Tabs Usuario / Mis viajes (solo se muestra en vista Usuario) -->
+     <div id="userTabsContainer" class="rounded-2xl bg-slate-900/60 border border-white/10 p-3 md:p-4">
+      <div class="flex gap-2 mb-3" role="tablist" aria-label="Opciones de usuario"><button id="tabBuscar" class="flex-1 px-3 py-2 text-xs md:text-sm rounded-xl bg-emerald-500 text-white font-medium shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400" role="tab" aria-selected="true"> Buscar / Reservar viaje </button> <button id="tabMisViajes" class="flex-1 px-3 py-2 text-xs md:text-sm rounded-xl bg-transparent text-slate-200 border border-white/10 hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400" role="tab" aria-selected="false"> Mis viajes reservados </button>
+      </div>
+      <p class="text-[11px] md:text-xs text-slate-300">Usa estos accesos como si fueras un usuario final. Las reservas solo se guardan mientras tengas esta página abierta.</p>
+     </div>
+    </aside><!-- Panel derecho: contenido dinámico usuario / empresa -->
+    <section class="space-y-4"><!-- CONTENIDO USUARIO -->
+     <div id="userView" class="space-y-4"><!-- Panel Buscar -->
+      <div id="panelBuscar" class="rounded-3xl bg-slate-900/70 border border-white/10 p-4 md:p-6 space-y-4" role="tabpanel" aria-labelledby="tabBuscar">
+       <div class="flex items-center justify-between gap-2">
+        <h2 class="text-lg md:text-xl font-semibold">Buscar tu viaje</h2><span id="routeHint" class="text-[11px] md:text-xs text-slate-300"> Rutas disponibles: Lima, Cusco, Trujillo </span>
+       </div>
+       <form id="searchForm" class="grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-4 text-sm" aria-label="Formulario de búsqueda de viajes"><!-- Origen -->
+        <div class="flex flex-col gap-1"><label for="origin" class="text-xs font-medium text-slate-200">Origen</label> <select id="origin" name="origin" class="w-full rounded-xl border border-white/20 bg-slate-900/80 px-3 py-2 text-xs md:text-sm text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"> <option value="">Selecciona origen</option> <option value="Lima">Lima</option> <option value="Cusco">Cusco</option> <option value="Trujillo">Trujillo</option> </select>
+        </div><!-- Destino -->
+        <div class="flex flex-col gap-1"><label for="destination" class="text-xs font-medium text-slate-200">Destino</label> <select id="destination" name="destination" class="w-full rounded-xl border border-white/20 bg-slate-900/80 px-3 py-2 text-xs md:text-sm text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"> <option value="">Selecciona destino</option> <option value="Lima">Lima</option> <option value="Cusco">Cusco</option> <option value="Trujillo">Trujillo</option> </select>
+        </div><!-- Fecha -->
+        <div class="flex flex-col gap-1"><label for="date" class="text-xs font-medium text-slate-200">Fecha</label> <input type="date" id="date" name="date" class="w-full rounded-xl border border-white/20 bg-slate-900/80 px-3 py-2 text-xs md:text-sm text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400">
+        </div><!-- Botón -->
+        <div class="flex items-end"><button type="submit" class="w-full rounded-xl bg-emerald-500 hover:bg-emerald-400 text-xs md:text-sm font-semibold px-3 py-2 shadow-md shadow-emerald-500/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"> Buscar buses </button>
+        </div>
+       </form>
+       <div id="searchMessage" class="text-xs text-slate-300 mt-1"></div><!-- Indicador de fechas disponibles -->
+       <div class="mt-2 rounded-xl bg-emerald-500/10 border border-emerald-400/30 px-3 py-2 text-xs md:text-sm">
+        <p class="text-emerald-200 font-medium mb-1">📅 Viajes disponibles:</p>
+        <p id="availableDate" class="text-emerald-100 font-semibold"></p>
+        <p class="text-emerald-200/80 text-[11px] mt-1">Rutas: Lima ↔ Cusco, Lima ↔ Trujillo, Cusco ↔ Trujillo</p>
+       </div><!-- Resultados de búsqueda -->
+       <div id="resultsContainer" class="mt-3 space-y-2" aria-live="polite" aria-label="Resultados de búsqueda"></div>
+      </div><!-- Panel Mis viajes -->
+      <div id="panelMisViajes" class="rounded-3xl bg-slate-900/70 border border-white/10 p-4 md:p-6 space-y-3 hidden" role="tabpanel" aria-labelledby="tabMisViajes">
+       <div class="flex items-center justify-between">
+        <h2 class="text-lg md:text-xl font-semibold">Mis viajes reservados</h2><button id="btnClearReservations" class="text-[11px] md:text-xs text-slate-300 hover:text-red-300 underline-offset-2 hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400 rounded-lg px-2 py-1"> Limpiar lista </button>
+       </div>
+       <p class="text-xs md:text-sm text-slate-300">Aquí verás un resumen de tus reservas realizadas en esta sesión.</p>
+       <div id="reservationsList" class="mt-2 space-y-2" aria-live="polite"></div>
+      </div>
+     </div><!-- CONTENIDO EMPRESAS -->
+     <div id="companyView" class="space-y-4 hidden"><!-- Tabs internos Empresa -->
+      <div class="rounded-2xl bg-slate-900/70 border border-white/10 p-3 md:p-4">
+       <div class="flex gap-2 mb-3" role="tablist" aria-label="Opciones para empresas"><button id="tabEmpresasBuses" class="flex-1 px-3 py-2 text-xs md:text-sm rounded-xl bg-sky-500 text-white font-medium shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400" role="tab" aria-selected="true"> Registrar buses / rutas </button> <button id="tabEmpresasAsientos" class="flex-1 px-3 py-2 text-xs md:text-sm rounded-xl bg-transparent text-slate-200 border border-white/10 hover:bg-white/5 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400" role="tab" aria-selected="false"> Ver mapa de asientos </button>
+       </div>
+       <p class="text-[11px] md:text-xs text-slate-300">Sección demo para empresas (Oltursa, Civa, Cruz del Sur, etc.). No hay login real, es solo una simulación local.</p>
+      </div><!-- Panel Empresas: Registrar buses / rutas -->
+      <section id="panelEmpresasBuses" class="rounded-3xl bg-slate-900/70 border border-white/10 p-4 md:p-6 space-y-4" role="tabpanel" aria-labelledby="tabEmpresasBuses">
+       <div class="flex items-center justify-between">
+        <h2 class="text-lg md:text-xl font-semibold">Registrar bus y ruta</h2><span class="text-[11px] md:text-xs text-slate-300">Demo sin base de datos</span>
+       </div>
+       <form id="companyRouteForm" class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4 text-xs md:text-sm" aria-label="Formulario para empresas"><!-- Empresa -->
+        <div class="flex flex-col gap-1"><label for="companyName" class="text-xs font-medium text-slate-200">Nombre de la empresa</label> <input id="companyName" name="companyName" type="text" placeholder="Ej: Oltursa" class="rounded-xl border border-white/20 bg-slate-900/80 px-3 py-2 text-xs md:text-sm text-white placeholder-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400">
+        </div><!-- Origen -->
+        <div class="flex flex-col gap-1"><label for="companyOrigin" class="text-xs font-medium text-slate-200">Origen</label> <select id="companyOrigin" name="companyOrigin" class="rounded-xl border border-white/20 bg-slate-900/80 px-3 py-2 text-xs md:text-sm text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"> <option value="">Selecciona origen</option> <option value="Lima">Lima</option> <option value="Cusco">Cusco</option> <option value="Trujillo">Trujillo</option> </select>
+        </div><!-- Destino -->
+        <div class="flex flex-col gap-1"><label for="companyDestination" class="text-xs font-medium text-slate-200">Destino</label> <select id="companyDestination" name="companyDestination" class="rounded-xl border border-white/20 bg-slate-900/80 px-3 py-2 text-xs md:text-sm text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"> <option value="">Selecciona destino</option> <option value="Lima">Lima</option> <option value="Cusco">Cusco</option> <option value="Trujillo">Trujillo</option> </select>
+        </div><!-- Fecha -->
+        <div class="flex flex-col gap-1"><label for="companyDate" class="text-xs font-medium text-slate-200">Fecha</label> <input id="companyDate" name="companyDate" type="date" class="rounded-xl border border-white/20 bg-slate-900/80 px-3 py-2 text-xs md:text-sm text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400">
+        </div><!-- Hora -->
+        <div class="flex flex-col gap-1"><label for="companyTime" class="text-xs font-medium text-slate-200">Hora</label> <input id="companyTime" name="companyTime" type="time" class="rounded-xl border border-white/20 bg-slate-900/80 px-3 py-2 text-xs md:text-sm text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400">
+        </div><!-- Precio -->
+        <div class="flex flex-col gap-1"><label for="companyPrice" class="text-xs font-medium text-slate-200">Precio (S/.)</label> <input id="companyPrice" name="companyPrice" type="number" min="0" step="1" placeholder="Ej: 80" class="rounded-xl border border-white/20 bg-slate-900/80 px-3 py-2 text-xs md:text-sm text-white placeholder-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400">
+        </div><!-- Asientos -->
+        <div class="flex flex-col gap-1"><label for="companySeats" class="text-xs font-medium text-slate-200">Cantidad de asientos</label> <input id="companySeats" name="companySeats" type="number" min="10" max="60" step="1" value="30" class="rounded-xl border border-white/20 bg-slate-900/80 px-3 py-2 text-xs md:text-sm text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400">
+        </div>
+        <div class="flex items-end md:col-span-3"><button type="submit" class="w-full md:w-auto rounded-xl bg-sky-500 hover:bg-sky-400 text-xs md:text-sm font-semibold px-4 py-2 shadow-md shadow-sky-500/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400"> Registrar ruta </button>
+        </div>
+       </form>
+       <div id="companyMessage" class="text-xs text-slate-300"></div>
+       <div>
+        <h3 class="text-sm md:text-base font-semibold mb-2">Rutas registradas (demo)</h3>
+        <div id="companyRoutesList" class="space-y-2 text-xs md:text-sm"></div>
+       </div>
+      </section><!-- Panel Empresas: Mapa de asientos -->
+      <section id="panelEmpresasAsientos" class="rounded-3xl bg-slate-900/70 border border-white/10 p-4 md:p-6 space-y-4 hidden" role="tabpanel" aria-labelledby="tabEmpresasAsientos">
+       <div class="flex items-center justify-between">
+        <h2 class="text-lg md:text-xl font-semibold">Mapa de asientos por ruta</h2><span class="text-[11px] md:text-xs text-slate-300">Selecciona una ruta para ver detalles</span>
+       </div>
+       <div class="grid grid-cols-1 md:grid-cols-[1.1fr,1.2fr] gap-4 text-xs md:text-sm">
+        <div class="space-y-2"><label for="seatRouteSelect" class="text-xs font-medium text-slate-200">Ruta registrada</label> <select id="seatRouteSelect" class="w-full rounded-xl border border-white/20 bg-slate-900/80 px-3 py-2 text-xs md:text-sm text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400"> <option value="">Selecciona ruta</option> </select>
+         <p class="text-[11px] md:text-xs text-slate-300">Las reservas de los usuarios afectarán este mapa de asientos.</p>
+        </div>
+        <div id="companySeatMapInfo" class="rounded-2xl border border-white/10 bg-black/20 p-3 md:p-4 min-h-[120px]">
+         <p class="text-xs text-slate-300">No se ha seleccionado ninguna ruta.</p>
+        </div>
+       </div>
+      </section>
+     </div>
+    </section>
+   </section><!-- Toast de mensajes -->
+   <div id="toast" class="fixed left-1/2 -translate-x-1/2 bottom-4 z-50 hidden">
+    <div class="rounded-full bg-black/80 text-xs md:text-sm text-white px-4 py-2 shadow-lg border border-emerald-400/60"><span id="toastMessage"></span>
+    </div>
+   </div>
+  </main>
+  <footer class="max-w-6xl mx-auto px-6 pb-6 pt-2 text-[11px] md:text-xs text-slate-400">
+   <div class="flex flex-wrap items-center justify-between gap-2 border-t border-white/10 pt-3"><span>Terranova Viajes · Demo educativa (sin pagos reales).</span> <span>Ideal como base para proyecto con backend y base de datos.</span>
+   </div>
+  </footer>
+  <script>
+    // ===========================
+    // Estado en memoria (demo)
+    // ===========================
+    const state = {
+      companyRoutes: [],       // Rutas creadas por empresas
+      reservations: [],        // Reservas de usuarios
+      currentView: 'user',     // 'user' | 'company'
+      userTab: 'buscar',       // 'buscar' | 'misViajes'
+      companyTab: 'buses',     // 'buses' | 'asientos'
+      isLoggedIn: false,       // Estado de sesión
+      currentUser: null        // Usuario actual
+    };
+
+    // ===========================
+    // Sistema de Login/Registro
+    // ===========================
+    const loginScreen = document.getElementById('loginScreen');
+    const mainApp = document.getElementById('mainApp');
+    const tabLogin = document.getElementById('tabLogin');
+    const tabRegister = document.getElementById('tabRegister');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const btnLogout = document.getElementById('btnLogout');
+
+    // Cambiar entre tabs de login y registro
+    tabLogin.addEventListener('click', () => {
+      loginForm.classList.remove('hidden');
+      registerForm.classList.add('hidden');
+      tabLogin.classList.add('bg-emerald-500', 'text-white');
+      tabLogin.classList.remove('bg-transparent', 'border', 'border-white/10');
+      tabRegister.classList.remove('bg-emerald-500', 'text-white');
+      tabRegister.classList.add('bg-transparent', 'border', 'border-white/10');
+      tabLogin.setAttribute('aria-selected', 'true');
+      tabRegister.setAttribute('aria-selected', 'false');
+    });
+
+    tabRegister.addEventListener('click', () => {
+      registerForm.classList.remove('hidden');
+      loginForm.classList.add('hidden');
+      tabRegister.classList.add('bg-emerald-500', 'text-white');
+      tabRegister.classList.remove('bg-transparent', 'border', 'border-white/10');
+      tabLogin.classList.remove('bg-emerald-500', 'text-white');
+      tabLogin.classList.add('bg-transparent', 'border', 'border-white/10');
+      tabRegister.setAttribute('aria-selected', 'true');
+      tabLogin.setAttribute('aria-selected', 'false');
+    });
+
+    // Procesar login
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+      const loginMessage = document.getElementById('loginMessage');
+
+      if (!email || !password) {
+        loginMessage.textContent = 'Por favor completa todos los campos.';
+        return;
+      }
+
+      // Simular login exitoso (en producción validarías con backend)
+      state.isLoggedIn = true;
+      state.currentUser = { email, name: email.split('@')[0] };
+      
+      loginMessage.textContent = '';
+      showToast('¡Bienvenido! Sesión iniciada correctamente.');
+      
+      // Mostrar app principal
+      loginScreen.classList.add('hidden');
+      mainApp.classList.remove('hidden');
+      
+      loginForm.reset();
+    });
+
+    // Procesar registro
+    registerForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('registerName').value.trim();
+      const email = document.getElementById('registerEmail').value.trim();
+      const password = document.getElementById('registerPassword').value.trim();
+      const dni = document.getElementById('registerDni').value.trim();
+      const registerMessage = document.getElementById('registerMessage');
+
+      if (!name || !email || !password || !dni) {
+        registerMessage.textContent = 'Por favor completa todos los campos.';
+        return;
+      }
+
+      // Simular registro exitoso
+      state.isLoggedIn = true;
+      state.currentUser = { email, name };
+      
+      registerMessage.textContent = '';
+      showToast('¡Cuenta creada! Bienvenido a Terranova Viajes.');
+      
+      // Mostrar app principal
+      loginScreen.classList.add('hidden');
+      mainApp.classList.remove('hidden');
+      
+      registerForm.reset();
+    });
+
+    // Cerrar sesión
+    btnLogout.addEventListener('click', () => {
+      state.isLoggedIn = false;
+      state.currentUser = null;
+      state.reservations = [];
+      
+      mainApp.classList.add('hidden');
+      loginScreen.classList.remove('hidden');
+      
+      showToast('Sesión cerrada correctamente.');
+    });
+
+    // Función para crear viajes de ejemplo para múltiples fechas
+    function createSampleRoutes() {
+      const today = new Date();
+      
+      // Crear viajes para hoy y los próximos 2 años (730 días)
+      const daysToGenerate = 730;
+      
+      // Plantilla de rutas que se repetirán cada día
+      const routeTemplates = [
+        // Lima - Cusco
+        { company: 'Cruz del Sur', origin: 'Lima', destination: 'Cusco', time: '08:00', price: 120, seats: 40 },
+        { company: 'Oltursa', origin: 'Lima', destination: 'Cusco', time: '14:30', price: 110, seats: 35 },
+        { company: 'Civa', origin: 'Lima', destination: 'Cusco', time: '22:00', price: 95, seats: 42 },
+        
+        // Cusco - Lima
+        { company: 'Cruz del Sur', origin: 'Cusco', destination: 'Lima', time: '09:00', price: 120, seats: 40 },
+        { company: 'Oltursa', origin: 'Cusco', destination: 'Lima', time: '16:00', price: 115, seats: 38 },
+        
+        // Lima - Trujillo
+        { company: 'Civa', origin: 'Lima', destination: 'Trujillo', time: '07:30', price: 65, seats: 45 },
+        { company: 'Cruz del Sur', origin: 'Lima', destination: 'Trujillo', time: '13:00', price: 75, seats: 40 },
+        { company: 'Oltursa', origin: 'Lima', destination: 'Trujillo', time: '23:30', price: 60, seats: 42 },
+        
+        // Trujillo - Lima
+        { company: 'Civa', origin: 'Trujillo', destination: 'Lima', time: '08:00', price: 65, seats: 45 },
+        { company: 'Cruz del Sur', origin: 'Trujillo', destination: 'Lima', time: '15:30', price: 70, seats: 40 },
+        
+        // Cusco - Trujillo
+        { company: 'Oltursa', origin: 'Cusco', destination: 'Trujillo', time: '10:00', price: 140, seats: 35 },
+        { company: 'Civa', origin: 'Cusco', destination: 'Trujillo', time: '20:00', price: 130, seats: 38 },
+        
+        // Trujillo - Cusco
+        { company: 'Cruz del Sur', origin: 'Trujillo', destination: 'Cusco', time: '11:00', price: 145, seats: 36 },
+        { company: 'Oltursa', origin: 'Trujillo', destination: 'Cusco', time: '21:30', price: 135, seats: 40 }
+      ];
+
+      // Generar rutas para cada día
+      for (let dayOffset = 0; dayOffset < daysToGenerate; dayOffset++) {
+        const currentDate = new Date(today);
+        currentDate.setDate(today.getDate() + dayOffset);
+        
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+        const dateFormatted = `${year}-${month}-${day}`;
+
+        routeTemplates.forEach((template, index) => {
+          const routeId = 'route-' + dayOffset + '-' + index + '-' + Date.now();
+          state.companyRoutes.push({
+            id: routeId,
+            companyName: template.company,
+            origin: template.origin,
+            destination: template.destination,
+            date: dateFormatted,
+            time: template.time,
+            price: template.price,
+            seats: template.seats,
+            seatMap: Array(template.seats).fill(false)
+          });
+        });
+      }
+    }
+
+    // Utilidad: mostrar toast
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toastMessage');
+      toastMessage.textContent = message;
+      toast.classList.remove('hidden');
+
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 2500);
+    }
+
+    // ===========================
+    // Cambio de vista Usuario / Empresa
+    // ===========================
+    const btnUserView = document.getElementById('btnUserView');
+    const btnCompanyView = document.getElementById('btnCompanyView');
+    const userView = document.getElementById('userView');
+    const companyView = document.getElementById('companyView');
+    const userTabsContainer = document.getElementById('userTabsContainer');
+
+    function updateMainView() {
+      if (state.currentView === 'user') {
+        userView.classList.remove('hidden');
+        companyView.classList.add('hidden');
+        userTabsContainer.classList.remove('hidden');
+        btnUserView.classList.remove('border-white/20');
+        btnUserView.classList.replace('bg-transparent', 'bg-emerald-500');
+        btnUserView.classList.replace('text-slate-100', 'text-white');
+
+        btnCompanyView.classList.remove('bg-emerald-500');
+        btnCompanyView.classList.add('border-white/20', 'bg-transparent');
+      } else {
+        userView.classList.add('hidden');
+        companyView.classList.remove('hidden');
+        userTabsContainer.classList.add('hidden');
+
+        btnCompanyView.classList.remove('border-white/20', 'bg-transparent');
+        btnCompanyView.classList.add('bg-emerald-500', 'text-white');
+
+        btnUserView.classList.remove('bg-emerald-500', 'text-white');
+        btnUserView.classList.add('bg-transparent', 'border-white/20', 'text-slate-100');
+      }
+    }
+
+    btnUserView.addEventListener('click', () => {
+      state.currentView = 'user';
+      updateMainView();
+    });
+
+    btnCompanyView.addEventListener('click', () => {
+      state.currentView = 'company';
+      updateMainView();
+    });
+
+    // ===========================
+    // Tabs Usuario
+    // ===========================
+    const tabBuscar = document.getElementById('tabBuscar');
+    const tabMisViajes = document.getElementById('tabMisViajes');
+    const panelBuscar = document.getElementById('panelBuscar');
+    const panelMisViajes = document.getElementById('panelMisViajes');
+
+    function updateUserTabs() {
+      if (state.userTab === 'buscar') {
+        panelBuscar.classList.remove('hidden');
+        panelMisViajes.classList.add('hidden');
+
+        tabBuscar.classList.add('bg-emerald-500', 'text-white');
+        tabBuscar.setAttribute('aria-selected', 'true');
+        tabMisViajes.classList.remove('bg-emerald-500', 'text-white');
+        tabMisViajes.classList.add('bg-transparent', 'border', 'border-white/10');
+        tabMisViajes.setAttribute('aria-selected', 'false');
+      } else {
+        panelBuscar.classList.add('hidden');
+        panelMisViajes.classList.remove('hidden');
+
+        tabMisViajes.classList.add('bg-emerald-500', 'text-white');
+        tabMisViajes.setAttribute('aria-selected', 'true');
+        tabBuscar.classList.remove('bg-emerald-500', 'text-white');
+        tabBuscar.classList.add('bg-transparent', 'border', 'border-white/10');
+        tabBuscar.setAttribute('aria-selected', 'false');
+      }
+    }
+
+    tabBuscar.addEventListener('click', () => {
+      state.userTab = 'buscar';
+      updateUserTabs();
+    });
+
+    tabMisViajes.addEventListener('click', () => {
+      state.userTab = 'misViajes';
+      updateUserTabs();
+      renderReservations();
+    });
+
+    // ===========================
+    // Tabs Empresa
+    // ===========================
+    const tabEmpresasBuses = document.getElementById('tabEmpresasBuses');
+    const tabEmpresasAsientos = document.getElementById('tabEmpresasAsientos');
+    const panelEmpresasBuses = document.getElementById('panelEmpresasBuses');
+    const panelEmpresasAsientos = document.getElementById('panelEmpresasAsientos');
+
+    function updateCompanyTabs() {
+      if (state.companyTab === 'buses') {
+        panelEmpresasBuses.classList.remove('hidden');
+        panelEmpresasAsientos.classList.add('hidden');
+
+        tabEmpresasBuses.classList.add('bg-sky-500', 'text-white');
+        tabEmpresasBuses.setAttribute('aria-selected', 'true');
+        tabEmpresasAsientos.classList.remove('bg-sky-500', 'text-white');
+        tabEmpresasAsientos.classList.add('bg-transparent', 'border', 'border-white/10');
+        tabEmpresasAsientos.setAttribute('aria-selected', 'false');
+      } else {
+        panelEmpresasBuses.classList.add('hidden');
+        panelEmpresasAsientos.classList.remove('hidden');
+
+        tabEmpresasAsientos.classList.add('bg-sky-500', 'text-white');
+        tabEmpresasAsientos.setAttribute('aria-selected', 'true');
+        tabEmpresasBuses.classList.remove('bg-sky-500', 'text-white');
+        tabEmpresasBuses.classList.add('bg-transparent', 'border', 'border-white/10');
+        tabEmpresasBuses.setAttribute('aria-selected', 'false');
+      }
+    }
+
+    tabEmpresasBuses.addEventListener('click', () => {
+      state.companyTab = 'buses';
+      updateCompanyTabs();
+    });
+
+    tabEmpresasAsientos.addEventListener('click', () => {
+      state.companyTab = 'asientos';
+      updateCompanyTabs();
+      updateCompanySeatMapSelect();
+    });
+
+    // ===========================
+    // Formulario Empresas: registrar ruta
+    // ===========================
+    const companyRouteForm = document.getElementById('companyRouteForm');
+    const companyMessage = document.getElementById('companyMessage');
+    const companyRoutesList = document.getElementById('companyRoutesList');
+    const seatRouteSelect = document.getElementById('seatRouteSelect');
+    const companySeatMapInfo = document.getElementById('companySeatMapInfo');
+
+    companyRouteForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const companyName = document.getElementById('companyName').value.trim();
+      const origin = document.getElementById('companyOrigin').value;
+      const destination = document.getElementById('companyDestination').value;
+      const date = document.getElementById('companyDate').value;
+      const time = document.getElementById('companyTime').value;
+      const price = document.getElementById('companyPrice').value;
+      const seats = parseInt(document.getElementById('companySeats').value, 10);
+
+      companyMessage.textContent = '';
+
+      if (!companyName || !origin || !destination || !date || !time || !price || !seats) {
+        companyMessage.textContent = 'Por favor completa todos los campos para registrar la ruta.';
+        companyMessage.classList.remove('text-emerald-300');
+        companyMessage.classList.add('text-red-300');
+        return;
+      }
+
+      if (origin === destination) {
+        companyMessage.textContent = 'El origen y destino deben ser diferentes.';
+        companyMessage.classList.remove('text-emerald-300');
+        companyMessage.classList.add('text-red-300');
+        return;
+      }
+
+      const routeId = 'r' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+
+      const newRoute = {
+        id: routeId,
+        companyName,
+        origin,
+        destination,
+        date,
+        time,
+        price: Number(price),
+        seats: seats,
+        // mapa de asientos: array de booleanos (false = libre, true = ocupado)
+        seatMap: Array(seats).fill(false)
+      };
+
+      state.companyRoutes.push(newRoute);
+      renderCompanyRoutes();
+      updateCompanySeatMapSelect();
+
+      companyMessage.textContent = 'Ruta registrada correctamente.';
+      companyMessage.classList.remove('text-red-300');
+      companyMessage.classList.add('text-emerald-300');
+
+      companyRouteForm.reset();
+      document.getElementById('companySeats').value = 30;
+
+      showToast('Ruta de ' + companyName + ' registrada.');
+    });
+
+    function renderCompanyRoutes() {
+      companyRoutesList.innerHTML = '';
+
+      if (state.companyRoutes.length === 0) {
+        const emptyMsg = document.createElement('p');
+        emptyMsg.className = 'text-xs text-slate-400';
+        emptyMsg.textContent = 'Aún no se han registrado rutas.';
+        companyRoutesList.appendChild(emptyMsg);
+        return;
+      }
+
+      state.companyRoutes.forEach((route) => {
+        const card = document.createElement('article');
+        card.className = 'rounded-2xl border border-white/10 bg-black/30 px-3 py-2 flex flex-col md:flex-row md:items-center justify-between gap-2';
+
+        const left = document.createElement('div');
+        left.className = 'text-[11px] md:text-xs';
+        left.innerHTML =
+          '<p class="font-semibold text-slate-50">' + route.companyName + '</p>' +
+          '<p class="text-slate-200">' + route.origin + ' → ' + route.destination + '</p>' +
+          '<p class="text-slate-300">Fecha: ' + route.date + ' · ' + route.time + '</p>';
+
+        const right = document.createElement('div');
+        right.className = 'flex flex-wrap items-center gap-2 text-[11px] md:text-xs';
+        const priceBadge = document.createElement('span');
+        priceBadge.className = 'px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/60';
+        priceBadge.textContent = 'S/ ' + route.price.toFixed(2);
+
+        const seatInfo = document.createElement('span');
+        const occupied = route.seatMap.filter((s) => s).length;
+        const free = route.seatMap.length - occupied;
+        seatInfo.className = 'px-3 py-1 rounded-full bg-slate-800/60 text-slate-200 border border-white/10';
+        seatInfo.textContent = free + ' libres / ' + route.seatMap.length + ' asientos';
+
+        right.appendChild(priceBadge);
+        right.appendChild(seatInfo);
+
+        card.appendChild(left);
+        card.appendChild(right);
+
+        companyRoutesList.appendChild(card);
+      });
+    }
+
+    function updateCompanySeatMapSelect() {
+      seatRouteSelect.innerHTML = '<option value="">Selecciona ruta</option>';
+
+      state.companyRoutes.forEach((route) => {
+        const option = document.createElement('option');
+        option.value = route.id;
+        option.textContent = route.companyName + ' · ' + route.origin + ' → ' + route.destination + ' · ' + route.date;
+        seatRouteSelect.appendChild(option);
+      });
+    }
+
+    seatRouteSelect.addEventListener('change', () => {
+      const routeId = seatRouteSelect.value;
+      if (!routeId) {
+        companySeatMapInfo.innerHTML = '<p class="text-xs text-slate-300">No se ha seleccionado ninguna ruta.</p>';
+        return;
+      }
+      const route = state.companyRoutes.find((r) => r.id === routeId);
+      if (!route) {
+        companySeatMapInfo.innerHTML = '<p class="text-xs text-red-300">Ruta no encontrada.</p>';
+        return;
+      }
+      renderSeatMapForCompany(route);
+    });
+
+    function renderSeatMapForCompany(route) {
+      companySeatMapInfo.innerHTML = '';
+
+      const header = document.createElement('div');
+      header.className = 'mb-3 text-xs md:text-sm';
+      header.innerHTML =
+        '<p class="font-semibold text-slate-50">' + route.companyName + '</p>' +
+        '<p class="text-slate-200">' + route.origin + ' → ' + route.destination + '</p>' +
+        '<p class="text-slate-300">Fecha: ' + route.date + ' · ' + route.time + '</p>';
+
+      const seatStats = document.createElement('p');
+      seatStats.className = 'text-[11px] md:text-xs text-slate-300 mb-2';
+      const occupied = route.seatMap.filter((s) => s).length;
+      const free = route.seatMap.length - occupied;
+      seatStats.textContent = 'Asientos libres: ' + free + ' · Ocupados: ' + occupied + ' · Total: ' + route.seatMap.length;
+
+      const seatGrid = document.createElement('div');
+      seatGrid.className = 'grid grid-cols-5 gap-1.5 md:gap-2 mt-2';
+
+      route.seatMap.forEach((taken, index) => {
+        const seat = document.createElement('div');
+        seat.className =
+          'h-7 md:h-8 rounded-lg flex items-center justify-center text-[10px] md:text-xs border ' +
+          (taken
+            ? 'bg-red-500/20 text-red-200 border-red-400/60'
+            : 'bg-emerald-500/15 text-emerald-200 border-emerald-400/60');
+        seat.textContent = index + 1;
+        seatGrid.appendChild(seat);
+      });
+
+      const legend = document.createElement('div');
+      legend.className = 'flex items-center gap-3 mt-3 text-[10px] md:text-xs text-slate-300';
+      legend.innerHTML =
+        '<span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded bg-emerald-400/60 border border-emerald-300/80"></span> Libre</span>' +
+        '<span class="inline-flex items-center gap-1"><span class="w-3 h-3 rounded bg-red-500/70 border border-red-400/80"></span> Ocupado</span>';
+
+      companySeatMapInfo.appendChild(header);
+      companySeatMapInfo.appendChild(seatStats);
+      companySeatMapInfo.appendChild(seatGrid);
+      companySeatMapInfo.appendChild(legend);
+    }
+
+    // ===========================
+    // Búsqueda de viajes (Usuario)
+    // ===========================
+    const searchForm = document.getElementById('searchForm');
+    const searchMessage = document.getElementById('searchMessage');
+    const resultsContainer = document.getElementById('resultsContainer');
+
+    searchForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const origin = document.getElementById('origin').value;
+      const destination = document.getElementById('destination').value;
+      const date = document.getElementById('date').value;
+
+      resultsContainer.innerHTML = '';
+      searchMessage.textContent = '';
+
+      if (!date) {
+        searchMessage.textContent = 'Selecciona una fecha para buscar viajes disponibles.';
+        searchMessage.classList.remove('text-emerald-300');
+        searchMessage.classList.add('text-red-300');
+        return;
+      }
+
+      // Si solo se selecciona fecha, mostrar todos los viajes de ese día
+      let matchingRoutes;
+      
+      if (!origin && !destination) {
+        // Solo fecha: mostrar todos los viajes
+        matchingRoutes = state.companyRoutes.filter((route) => route.date === date);
+      } else if (origin && !destination) {
+        // Origen y fecha: mostrar viajes desde ese origen
+        matchingRoutes = state.companyRoutes.filter((route) => route.origin === origin && route.date === date);
+      } else if (!origin && destination) {
+        // Destino y fecha: mostrar viajes hacia ese destino
+        matchingRoutes = state.companyRoutes.filter((route) => route.destination === destination && route.date === date);
+      } else {
+        // Origen, destino y fecha completos
+        if (origin === destination) {
+          searchMessage.textContent = 'Origen y destino deben ser distintos.';
+          searchMessage.classList.remove('text-emerald-300');
+          searchMessage.classList.add('text-red-300');
+          return;
+        }
+        matchingRoutes = state.companyRoutes.filter(
+          (route) => route.origin === origin && route.destination === destination && route.date === date
+        );
+      }
+
+      if (matchingRoutes.length === 0) {
+        searchMessage.textContent = 'No se encontraron buses para esa búsqueda. Intenta con otra fecha u otra ruta.';
+        searchMessage.classList.remove('text-emerald-300');
+        searchMessage.classList.add('text-slate-300');
+        return;
+      }
+
+      searchMessage.textContent = matchingRoutes.length + ' viaje(s) encontrado(s).';
+      searchMessage.classList.remove('text-red-300');
+      searchMessage.classList.add('text-emerald-300');
+
+      matchingRoutes.forEach((route) => {
+        const card = document.createElement('article');
+        card.className = 'rounded-2xl border border-white/10 bg-black/40 p-3 md:p-4 space-y-2';
+
+        const header = document.createElement('div');
+        header.className = 'flex flex-wrap items-center justify-between gap-2 text-xs md:text-sm';
+        header.innerHTML =
+          '<div>' +
+          '<p class="font-semibold text-slate-50">' + route.companyName + '</p>' +
+          '<p class="text-slate-200">' + route.origin + ' → ' + route.destination + '</p>' +
+          '</div>' +
+          '<div class="text-right">' +
+          '<p class="text-slate-200">' + route.date + ' · ' + route.time + '</p>' +
+          '<p class="text-emerald-300 font-semibold">S/ ' + route.price.toFixed(2) + '</p>' +
+          '</div>';
+
+        const seatsInfo = document.createElement('p');
+        const occupied = route.seatMap.filter((s) => s).length;
+        const free = route.seatMap.length - occupied;
+        seatsInfo.className = 'text-[11px] md:text-xs text-slate-300';
+        seatsInfo.textContent = 'Asientos libres: ' + free + ' / ' + route.seatMap.length;
+
+        const actions = document.createElement('div');
+        actions.className = 'mt-2 flex flex-col gap-2';
+
+        const seatLabel = document.createElement('label');
+        seatLabel.className = 'text-[11px] md:text-xs text-slate-200';
+        seatLabel.textContent = 'Elige un asiento disponible:';
+
+        const seatGrid = document.createElement('div');
+        seatGrid.className = 'grid grid-cols-6 md:grid-cols-8 gap-1.5 md:gap-2';
+
+        route.seatMap.forEach((taken, index) => {
+          const seatBtn = document.createElement('button');
+          seatBtn.type = 'button';
+          seatBtn.textContent = index + 1;
+          seatBtn.className =
+            'h-7 md:h-8 rounded-lg text-[10px] md:text-xs border focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 ' +
+            (taken
+              ? 'bg-red-500/30 text-red-100 border-red-400/60 cursor-not-allowed'
+              : 'bg-emerald-500/15 text-emerald-100 border-emerald-400/60 hover:bg-emerald-500/40');
+
+          seatBtn.disabled = taken;
+
+          seatBtn.addEventListener('click', () => {
+            openReservationForm(route, index);
+          });
+
+          seatGrid.appendChild(seatBtn);
+        });
+
+        actions.appendChild(seatLabel);
+        actions.appendChild(seatGrid);
+
+        card.appendChild(header);
+        card.appendChild(seatsInfo);
+        card.appendChild(actions);
+
+        resultsContainer.appendChild(card);
+      });
+    });
+
+    // ===========================
+    // Reserva de asiento (form inline)
+    // ===========================
+    function openReservationForm(route, seatIndex) {
+      // Crear un modal simple dentro de la página
+      const existingModal = document.getElementById('reservationModal');
+      if (existingModal) existingModal.remove();
+
+      const modal = document.createElement('div');
+      modal.id = 'reservationModal';
+      modal.className =
+        'fixed inset-0 bg-black/60 flex items-center justify-center z-40';
+
+      const dialog = document.createElement('div');
+      dialog.className =
+        'w-full max-w-md rounded-3xl bg-slate-900 border border-white/10 p-4 md:p-6 shadow-xl';
+
+      const title = document.createElement('h2');
+      title.className = 'text-lg md:text-xl font-semibold mb-2';
+      title.textContent = 'Confirmar reserva';
+
+      const subtitle = document.createElement('p');
+      subtitle.className = 'text-xs md:text-sm text-slate-300 mb-3';
+      subtitle.textContent =
+        route.companyName +
+        ' · ' +
+        route.origin +
+        ' → ' +
+        route.destination +
+        ' · ' +
+        route.date +
+        ' · ' +
+        route.time +
+        ' · Asiento ' +
+        (seatIndex + 1);
+
+      const form = document.createElement('form');
+      form.className = 'space-y-3 text-xs md:text-sm';
+
+      // Nombre
+      const fieldName = document.createElement('div');
+      fieldName.className = 'flex flex-col gap-1';
+      const labelName = document.createElement('label');
+      labelName.className = 'text-xs font-medium text-slate-200';
+      labelName.setAttribute('for', 'resName');
+      labelName.textContent = 'Nombre completo';
+      const inputName = document.createElement('input');
+      inputName.id = 'resName';
+      inputName.type = 'text';
+      inputName.className =
+        'rounded-xl border border-white/20 bg-slate-900/80 px-3 py-2 text-xs md:text-sm text-white placeholder-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400';
+      inputName.placeholder = 'Ej: Juan Pérez';
+      fieldName.appendChild(labelName);
+      fieldName.appendChild(inputName);
+
+      // DNI
+      const fieldDni = document.createElement('div');
+      fieldDni.className = 'flex flex-col gap-1';
+      const labelDni = document.createElement('label');
+      labelDni.className = 'text-xs font-medium text-slate-200';
+      labelDni.setAttribute('for', 'resDni');
+      labelDni.textContent = 'DNI (demo)';
+      const inputDni = document.createElement('input');
+      inputDni.id = 'resDni';
+      inputDni.type = 'text';
+      inputDni.className =
+        'rounded-xl border border-white/20 bg-slate-900/80 px-3 py-2 text-xs md:text-sm text-white placeholder-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400';
+      inputDni.placeholder = 'Solo demostración';
+      fieldDni.appendChild(labelDni);
+      fieldDni.appendChild(inputDni);
+
+      // Correo
+      const fieldEmail = document.createElement('div');
+      fieldEmail.className = 'flex flex-col gap-1';
+      const labelEmail = document.createElement('label');
+      labelEmail.className = 'text-xs font-medium text-slate-200';
+      labelEmail.setAttribute('for', 'resEmail');
+      labelEmail.textContent = 'Correo electrónico';
+      const inputEmail = document.createElement('input');
+      inputEmail.id = 'resEmail';
+      inputEmail.type = 'email';
+      inputEmail.className =
+        'rounded-xl border border-white/20 bg-slate-900/80 px-3 py-2 text-xs md:text-sm text-white placeholder-slate-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400';
+      inputEmail.placeholder = 'ejemplo@correo.com';
+      fieldEmail.appendChild(labelEmail);
+      fieldEmail.appendChild(inputEmail);
+
+      const info = document.createElement('p');
+      info.className = 'text-[11px] md:text-xs text-slate-400';
+      info.textContent =
+        'No se realizará ningún pago. Esta es una reserva de prueba que solo se guarda mientras la p��gina esté abierta.';
+
+      const msg = document.createElement('p');
+      msg.id = 'resErrorMsg';
+      msg.className = 'text-[11px] md:text-xs text-red-300 min-h-[14px]';
+
+      const actions = document.createElement('div');
+      actions.className = 'flex flex-wrap justify-end gap-2 pt-2 border-t border-white/10 mt-2';
+
+      const btnCancel = document.createElement('button');
+      btnCancel.type = 'button';
+      btnCancel.className =
+        'px-3 md:px-4 py-1.5 rounded-xl text-[11px] md:text-xs border border-white/20 text-slate-100 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-400';
+      btnCancel.textContent = 'Cancelar';
+      btnCancel.addEventListener('click', () => {
+        modal.remove();
+      });
+
+      const btnSubmit = document.createElement('button');
+      btnSubmit.type = 'submit';
+      btnSubmit.className =
+        'px-3 md:px-4 py-1.5 rounded-xl text-[11px] md:text-xs bg-emerald-500 text-white font-semibold hover:bg-emerald-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400';
+      btnSubmit.textContent = 'Confirmar reserva';
+
+      actions.appendChild(btnCancel);
+      actions.appendChild(btnSubmit);
+
+      form.appendChild(fieldName);
+      form.appendChild(fieldDni);
+      form.appendChild(fieldEmail);
+      form.appendChild(info);
+      form.appendChild(msg);
+      form.appendChild(actions);
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        msg.textContent = '';
+
+        const name = inputName.value.trim();
+        const dni = inputDni.value.trim();
+        const email = inputEmail.value.trim();
+
+        if (!name || !dni || !email) {
+          msg.textContent = 'Completa todos los datos para continuar.';
+          return;
+        }
+
+        // Marcar asiento como ocupado en la ruta
+        const routeIndex = state.companyRoutes.findIndex((r) => r.id === route.id);
+        if (routeIndex === -1) {
+          msg.textContent = 'Ocurrió un problema con la ruta.';
+          return;
+        }
+        if (state.companyRoutes[routeIndex].seatMap[seatIndex]) {
+          msg.textContent = 'Ese asiento ya fue tomado. Actualiza la búsqueda.';
+          return;
+        }
+        state.companyRoutes[routeIndex].seatMap[seatIndex] = true;
+
+        // Registrar reserva en memoria
+        const reservation = {
+          id: 'res-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+          routeId: route.id,
+          companyName: route.companyName,
+          origin: route.origin,
+          destination: route.destination,
+          date: route.date,
+          time: route.time,
+          seatNumber: seatIndex + 1,
+          name,
+          dni,
+          email
+        };
+        state.reservations.push(reservation);
+
+        showToast('Reserva confirmada para ' + route.companyName + ', asiento ' + (seatIndex + 1));
+
+        // Actualizar vistas correspondientes
+        renderCompanyRoutes();
+        if (seatRouteSelect.value === route.id) {
+          renderSeatMapForCompany(state.companyRoutes[routeIndex]);
+        }
+
+        modal.remove();
+        panelMisViajes && renderReservations();
+      });
+
+      dialog.appendChild(title);
+      dialog.appendChild(subtitle);
+      dialog.appendChild(form);
+      modal.appendChild(dialog);
+      document.body.appendChild(modal);
+    }
+
+    // ===========================
+    // Listado de Mis viajes
+    // ===========================
+    const reservationsList = document.getElementById('reservationsList');
+    const btnClearReservations = document.getElementById('btnClearReservations');
+
+    function renderReservations() {
+      reservationsList.innerHTML = '';
+
+      if (state.reservations.length === 0) {
+        const emptyMsg = document.createElement('p');
+        emptyMsg.className = 'text-xs text-slate-400';
+        emptyMsg.textContent = 'Aún no has realizado ninguna reserva en esta sesión.';
+        reservationsList.appendChild(emptyMsg);
+        return;
+      }
+
+      state.reservations
+        .slice()
+        .reverse()
+        .forEach((res) => {
+          const card = document.createElement('article');
+          card.className =
+            'rounded-2xl border border-white/10 bg-black/40 p-3 md:p-4 text-xs md:text-sm flex flex-col gap-1.5';
+
+          const title = document.createElement('p');
+          title.className = 'font-semibold text-slate-50';
+          title.textContent =
+            res.companyName + ' · ' + res.origin + ' → ' + res.destination;
+
+          const line2 = document.createElement('p');
+          line2.className = 'text-slate-200';
+          line2.textContent = 'Fecha: ' + res.date + ' · ' + res.time + ' · Asiento ' + res.seatNumber;
+
+          const line3 = document.createElement('p');
+          line3.className = 'text-slate-300';
+          line3.textContent = 'Pasajero: ' + res.name + ' · DNI: ' + res.dni;
+
+          const line4 = document.createElement('p');
+          line4.className = 'text-[11px] md:text-xs text-slate-400';
+          line4.textContent = 'Correo: ' + res.email;
+
+          card.appendChild(title);
+          card.appendChild(line2);
+          card.appendChild(line3);
+          card.appendChild(line4);
+
+          reservationsList.appendChild(card);
+        });
+    }
+
+    btnClearReservations.addEventListener('click', () => {
+      state.reservations = [];
+      renderReservations();
+      showToast('Lista de viajes limpiada (solo demo).');
+    });
+
+    // ===========================
+    // Inicialización
+    // ===========================
+    function init() {
+      createSampleRoutes(); // Crear viajes de ejemplo al iniciar
+      updateMainView();
+      updateUserTabs();
+      updateCompanyTabs();
+      renderCompanyRoutes();
+      renderReservations();
+      
+      // Mostrar rango de fechas disponibles
+      const today = new Date();
+      const futureDate = new Date(today);
+      futureDate.setDate(today.getDate() + 729); // 730 días en total (hoy + 729 = 2 años)
+      
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      const todayFormatted = today.toLocaleDateString('es-ES', options);
+      const futureFormatted = futureDate.toLocaleDateString('es-ES', options);
+      
+      const availableDateEl = document.getElementById('availableDate');
+      if (availableDateEl) {
+        availableDateEl.textContent = `Desde HOY (${todayFormatted}) hasta ${futureFormatted} (2 años completos)`;
+      }
+      
+      // Pre-llenar el campo de fecha con hoy
+      const dateInput = document.getElementById('date');
+      if (dateInput) {
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        dateInput.value = `${year}-${month}-${day}`;
+      }
+    }
+
+    init();
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a3093e2305ccdcd',t:'MTc2Mzg5OTk3Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
